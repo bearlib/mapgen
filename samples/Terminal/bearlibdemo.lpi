@@ -33,7 +33,7 @@
     </RunParams>
     <Units Count="3">
       <Unit0>
-        <Filename Value="BearlibDemo.pas"/>
+        <Filename Value="bearlibdemo.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="BearlibDemo"/>
       </Unit0>

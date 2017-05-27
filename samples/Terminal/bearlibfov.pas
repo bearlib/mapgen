@@ -2,8 +2,7 @@ unit bearlibfov;
 
 interface
 
-	uses
-        ctypes;
+uses ctypes;
 
 const
   BeaRLibFOVLib = 'BeaRLibFOV.dll';

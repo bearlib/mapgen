@@ -20,7 +20,7 @@ unit uDelaunay;
 
 interface
 
-uses Windows, SysUtils,
+uses SysUtils,
 {$IFNDEF BEARLIB}
   Dialogs, Graphics, Forms,
 {$ENDIF}

@@ -5,7 +5,7 @@ uses
   BeaRLibTerminal,
   SysUtils,
   Math,
-  BearLibMap,
+  bearlibmap,
   MyToken, bearlibMG in '../../include/bearlibmg.pas';
 
 // Map layers:

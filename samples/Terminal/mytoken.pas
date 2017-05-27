@@ -1,23 +1,9 @@
-{****************************************************************************
-  Разработчик Коновод Андрей
-  Модифицирован: 3 февраля 2008
-
-Модуль содержит функции разбора строк
-  TokenStr - выделяет одно слово из строки (отделенное пробелом или табуляцией)
-  TokenStrS - то же самое, но отделенное заданным символом
-  TokenStrL - аналогично TokenStr, но выделяет последнее слово
-  TokenStrI - аналогично TokenStr, но слово может быть отделено любым символом, кроме букв и цифр
-
-  CharsToInt - выделяет число, закодированное побайтно в строке
-  IntToChars - кодирует число побайтно в строку из четырех символов
-  WordToChars - аналогично предыдущему , для 2 байт
-****************************************************************************}
 unit MyToken;
 {Version 2.2 off}
 
 interface
 
-uses Windows, Math, SysUtils;
+uses Math, SysUtils;
 
 function TokenStr(var s:string):string;
 function TokenStrS(var s:string;c:char):string;
@@ -47,6 +33,14 @@ function ReplaceAll(const s: string; ReplFrom, ReplTo: string): string;
 
 implementation
 
+function loWord (x:longint):longint;
+begin
+loword:=x and $FFFF;
+end;
+function hiWord (x:longint):longint;
+begin
+hiword:=x shr 16;
+end;
 
 function TokenStr(var s:string):string;
 var n,i,j:integer;
@@ -213,15 +207,15 @@ end;
 function Var2String(const Data; Size: Integer): string;
 begin
   Result := StringOfChar(' ', Size);
-  CopyMemory(pointer(Result), @Data, Size);
+  Move(Data, pointer(Result)^, Size);
 end;
 
 procedure String2Var(s: string; var Data; Size: Integer);
 begin
   if length(s) >= Size then
-    CopyMemory(@Data, pointer(s), Size)
+    Move(pointer(s)^, Data, Size)
   else
-    FillMemory(@Data, Size, 0);
+    FillByte(Data, Size, 0);
 end;
 
 procedure TokenVar(var s: string; var Data; Size: Integer);
