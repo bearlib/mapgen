@@ -6,7 +6,7 @@ uses
   SysUtils,
   Math,
   BearLibMap,
-  MyToken, bearlibMG;
+  MyToken, bearlibMG in '../../include/bearlibmg.pas';
 
 // Map layers:
 const
