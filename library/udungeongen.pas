@@ -2,8 +2,15 @@ unit uDungeonGen;
 
 interface
 
+{$IFDEF FPC}
+  {$MODE Delphi}
+{$ENDIF}
+
+
 {$IFDEF BEARLIB}
 uses uGeneral;
+{$ELSE}
+uses SysUtils;
 {$ENDIF}
 
 
@@ -11,6 +18,19 @@ type
 
 {$IFNDEF BEARLIB}
   TCellType = (TILE_CAVE_Wall = 0, TILE_Corridor, TILE_SmallRoom, TILE_BigRoom, TILE_RoomWall, TILE_Door);
+  TGeneratorParams = class
+    procedure SetField(s: string; x: single); virtual; abstract;
+    function GetField(s: string): single; virtual; abstract;
+  end;
+  TRoomInfo = record
+    X0, Y0, Width, Height: Integer;
+    Links: array of Integer;
+  end;
+
+  TRoomsData = class
+    data: array of TRoomInfo;
+  end;
+
 {$ENDIF}
 
   TRoomIndex = Integer;
@@ -23,14 +43,20 @@ type
     //Distance: Integer;
   end;
 
+
+  TDirection = (N,S,W,E);
+
   //Rooms type
   TRoom = record
     X,Y,W,H: integer;
     RoomType: TCellType;
     Links: array of TNodeLink;
     TraverseId: Integer;
+    CachedDoorPos: array[TDirection] of integer;  
     function CenterX: Integer;
     function CenterY: Integer;
+    function RandomX: Integer;
+    function RandomY: Integer;
     function Intersects(const WithRoom: TRoom): Boolean;
     function CloseByX(const WithRoom: TRoom): Boolean;
     function CloseByY(const WithRoom: TRoom): Boolean;
@@ -39,6 +65,7 @@ type
   PRoom = ^TRoom;
 
   TNiceDungeonGeneratorParams = class(TGeneratorParams)
+    NRooms: Integer;
     RoomMinSize, RoomMaxSize, RoomThreshold: Integer;//in cells
     MaxSizeRatio: Single;
     InitialRadius: Single;// 0..1 (Scaled by MapX/MapY)
@@ -59,7 +86,7 @@ type
     Cells: TCells;
     RoomCache: TRoomCache;
 
-    constructor Create(aMapX, aMapY, aNRooms: Integer; aParams: TNiceDungeonGeneratorParams);
+    constructor Create(aMapX, aMapY: Integer; aParams: TNiceDungeonGeneratorParams);
     //Step 1
     procedure GenerateRooms;
     //Step 2
@@ -83,15 +110,15 @@ uses Math, uDelaunay;
 
 { TDungeon }
 
-constructor TDungeon.Create(aMapX, aMapY, aNRooms: Integer;
+constructor TDungeon.Create(aMapX, aMapY: Integer;
   aParams: TNiceDungeonGeneratorParams);
 begin
   MapX := aMapX;
   MapY := aMapY;
-  NRooms := aNRooms;
-  if Params = nil then
-    Params := TNiceDungeonGeneratorParams.Create;
+  if aParams = nil then
+    aParams := TNiceDungeonGeneratorParams.Create;
   Params := aParams;
+  NRooms := Params.NRooms;
   SetLength(Rooms, NRooms);
   SetLength(Cells, MapX,MapY);
   SetLength(RoomCache, MapX,MapY);
@@ -154,21 +181,52 @@ end;
 procedure TDungeon.DrawHallways;
 
 var
-  CurPass: Integer; 
+  CurPass, FromRoom, ToRoom: Integer;
+  prevx, prevy: integer;
+  prevroom: Integer;
+  
 
   procedure OneCell(x,y: integer; Central: boolean = false);
   var
-    N: Integer;
+    FoundRoom, I, N: Integer;
   begin
     if not InRange(x, 1, MapX) then exit;
     if not InRange(y, 1, MapY) then exit;
-    if (Cells[x,y] in [TILE_RoomWall, TILE_Door]) and Central and (Rooms[RoomCache[x,y]-1].TraverseId < CurPass) then
+    if (Cells[x,y] in [TILE_RoomWall, TILE_Door])  then
     begin
+      if not Central then exit;
+      FoundRoom := RoomCache[x,y]-1;
+      if Rooms[RoomCache[x,y]-1].TraverseId = CurPass then
+      begin
+        //only one door in starting andd ending room
+        {if FoundRoom = FromRoom then exit;
+        if FoundRoom = ToRoom then exit;}
+        //if its another room - set a door
+        if (prevroom >= 0) and (FoundRoom <> prevroom) then
+          Cells[prevx,prevy] := TILE_Door;
+        //otherwise - save position to set door at last visited
+        prevroom := FoundRoom;
+        prevx := X;
+        prevy := Y;
+        exit;
+      end;
       Cells[x,y] := TILE_Door;
       Rooms[RoomCache[x,y]-1].TraverseId := CurPass;
+      if (FoundRoom <> FromRoom) and (FoundRoom <> ToRoom) then
+      begin
+        prevroom := FoundRoom;
+        prevx := X;
+        prevy := Y;
+      end;
       exit;
     end;
     if Cells[x,y] <> TILE_CAVE_Wall then exit;
+    if central and (prevroom >= 0) then
+    begin
+      Cells[prevx,prevy] := TILE_Door;
+      prevroom := -1;
+    end;
+
     N := RoomCache[x,y];
     if (N > 0) and (Rooms[N-1].RoomType <> TILE_BigRoom) then
     begin
@@ -179,24 +237,39 @@ var
     Cells[x,y] := TILE_Corridor;
   end;
 
-  procedure DrawVertical(y, x1, x2: Integer);
+  procedure DrawHoriz(y, x1, x2: Integer);
   var
-    ax: integer;
+    ax, dx, i, n: integer;
   begin
-    for ax := min(x1, x2)-1 to max(x1, x2)+1 do
+    n := abs(x1 - x2)+3;
+    ax := x1;
+    if x1 < x2 then
+      dx := 1
+    else
+      dx := -1;
+    dec(ax, dx);
+    for i := 1 to n do
     begin
       OneCell(ax, y-1);
       OneCell(ax, y, true);
       OneCell(ax, y+1);
+      inc(ax, dx);
     end;
   end;
 
-  procedure DrawHoriz(x, y1, y2: Integer);
+  procedure DrawVertical(x, y1, y2: Integer);
   var
-    ay: integer;
+    ay, dy, i, n: integer;
   begin
-    for ay := min(y1, y2)-1 to max(y1,y2)+1 do
+    n := abs(y1 - y2)+3;
+    ay := y1;
+    if y1 < y2 then
+      dy := 1
+    else
+      dy := -1;
+    for i := 1 to n do
     begin
+      inc(ay, dy);
       OneCell(x-1, ay);
       OneCell(x, ay, true);
       OneCell(x+1, ay);
@@ -204,8 +277,9 @@ var
   end;
 
 var
-  I, J: Integer;
-  Room, Target: PRoom;
+  I, J, basex, basey, tmpi: Integer;
+  Room, Target, tmp: PRoom;
+  swapped: boolean;
 begin
   SetLength(Cells, 0, 0);
   SetLength(Cells, MapX, MapY);
@@ -218,25 +292,56 @@ begin
   for I := 0 to Length(MainRooms) - 1 do
   begin
     Room := @Rooms[MainRooms[I]];
+    Room.CachedDoorPos[N] := Room.RandomX;
+    Room.CachedDoorPos[S] := Room.RandomX;
+    Room.CachedDoorPos[W] := Room.RandomY;
+    Room.CachedDoorPos[E] := Room.RandomY;
+    Room.TraverseId := -1;
+  end;
+  for I := 0 to Length(MainRooms) - 1 do
+  begin
+    Room := @Rooms[MainRooms[I]];
     for J := 0 to Length(Room.Links) - 1 do
     begin
       if Room.Links[J].Removed or(Room.Links[J].Target < I) then continue;
       Target := @Rooms[MainRooms[Room.Links[J].Target]];
       inc(CurPass);
-      if Room.CloseByX(Target^) then
-        DrawHoriz((Room.CenterX+Target.CenterX) div 2, Room.CenterY, Target.CenterY)
+      prevroom := -1;
+      FromRoom := MainRooms[Room.Links[J].Target];
+      ToRoom := MainRooms[I];
+
+      {if Room.CloseByX(Target^) then
+        DrawVertical((Room.CenterX+Target.CenterX) div 2, Room.CenterY, Target.CenterY)
       else if Room.CloseByY(Target^) then
-        DrawVertical((Room.CenterY+Target.CenterY) div 2, Room.CenterX, Target.CenterX)
-      else if random < 0.5 then
+        DrawHoriz((Room.CenterY+Target.CenterY) div 2, Room.CenterX, Target.CenterX)
+      else}
+      //-1005289332
+      swapped := random > 0.5;
+      if swapped then
       begin
-        DrawHoriz(Room.CenterX, Room.CenterY, Target.CenterY);
-        DrawVertical(Target.CenterY, Room.CenterX, Target.CenterX);
-      end
+        tmp := Room;
+        Room := Target;
+        Target := tmp;
+        tmpi := FromRoom;
+        FromRoom := ToRoom;
+        ToRoom := tmpi;
+      end;
+      //Vertical from first room
+      if Target.CenterY > Room.CenterY then
+        basex := Room.CachedDoorPos[N]
       else
-      begin
-        DrawHoriz(Target.CenterX, Room.CenterY, Target.CenterY);
-        DrawVertical(Room.CenterY, Room.CenterX, Target.CenterX);
-      end;           
+        basex := Room.CachedDoorPos[S];
+      //Horizontal from second room
+      if Room.CenterX > Target.CenterX then
+        basey := Target.CachedDoorPos[W]
+      else
+        basey := Target.CachedDoorPos[E];
+
+        DrawVertical(basex, Room.CenterY, basey);
+        DrawHoriz(basey, basex, Target.CenterX);
+      if swapped then
+        Room := Target;
+
     end;
   end;
 end;
@@ -253,10 +358,10 @@ begin
     P := @Rooms[MainRooms[I]];
     with ToRooms.data[I] do
     begin
-      X0 := P.X;
-      Y0 := P.Y;
-      Width := P.W;
-      Height := P.H;
+      X0 := P.X+1;
+      Y0 := P.Y+1;
+      Width := P.W-2;
+      Height := P.H-2;
       N := 0;
       for J := 0 to Length(P.Links) - 1 do
         if not P.Links[J].Removed then inc(N);
@@ -595,6 +700,29 @@ begin
     (H div 2 + WithRoom.H div 2 >= abs(CenterY - WithRoom.CenterY));
 end;
 
+// X=0,W=6
+// |    |
+// +-??-+
+// X
+// |   |
+// +-!-+
+
+function TRoom.RandomX: Integer;
+begin
+  if W < 6 then
+    Result := CenterX
+  else
+    Result := X+2+random(W-4);
+end;
+
+function TRoom.RandomY: Integer;
+begin
+  if H < 6 then
+    Result := CenterY
+  else
+    Result := Y+2+random(H-4);
+end;
+
 function TRoom.CloseByX(const WithRoom: TRoom): Boolean;
 begin
   Result :=
@@ -611,6 +739,7 @@ end;
 
 constructor TNiceDungeonGeneratorParams.Create;
 begin
+  NRooms := 150;
   RoomMinSize := 3;
   RoomMaxSize := 11;
   RoomThreshold := 6;
@@ -636,6 +765,7 @@ end;
 begin
   s := UpperCase(s);
   Result := 0;
+  if tryint('NROOMS', NRooms) then exit;
   if tryint('ROOMMINSIZE', RoomMinSize) then exit;
   if tryint('ROOMMAXSIZE', RoomMaxSize) then exit;
   if tryint('ROOMTHRESHOLD', RoomThreshold) then exit;
@@ -661,6 +791,7 @@ end;
 
 begin
   s := UpperCase(s);
+  if tryint('NROOMS', NRooms) then exit;
   if tryint('ROOMMINSIZE', RoomMinSize) then exit;
   if tryint('ROOMMAXSIZE', RoomMaxSize) then exit;
   if tryint('ROOMTHRESHOLD', RoomThreshold) then exit;

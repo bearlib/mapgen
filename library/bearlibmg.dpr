@@ -4,9 +4,9 @@ uses
   uBeaRLibMG,
   uMapGenerator in 'uMapGenerator.pas',
   bearlibmap in 'bearlibmap.pas',
-  uGeneral in 'uGeneral.pas',
-  uDelaunay in '..\uDelaunay.pas',
-  uDungeonGen in '..\uDungeonGen.pas';
+  uGeneral in 'ugeneral.pas',
+  uDelaunay in 'uDelaunay.pas',
+  uDungeonGen in 'uDungeonGen.pas';
 
 exports mg_generate, mg_generate_cb,
 

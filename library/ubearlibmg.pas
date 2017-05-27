@@ -1,5 +1,9 @@
 unit uBeaRLibMG;
 
+{$IFDEF FPC}
+  {$MODE Delphi}
+{$ENDIF}
+
 interface
 
 uses uGeneral, uMapGenerator;

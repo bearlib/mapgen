@@ -67,3 +67,5 @@ __recovery/
 *.bak
 *.compiled
 *.ppu
+*.log
+*.lps

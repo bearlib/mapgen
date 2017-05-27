@@ -6,17 +6,14 @@
     <BuildModes Active="Default"/>
     <Units Count="6">
       <Unit0>
-        <Filename Value="BearlibDemo.pas"/>
+        <Filename Value="bearlibdemo.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="BearlibDemo"/>
         <IsVisibleTab Value="True"/>
-        <EditorIndex Value="0"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="71"/>
-        <CursorPos X="23" Y="86"/>
+        <CursorPos X="8" Y="7"/>
         <UsageCount Value="32"/>
         <Bookmarks Count="1">
-          <Item0 X="1" Y="62" ID="0"/>
+          <Item0 Y="62"/>
         </Bookmarks>
         <Loaded Value="True"/>
       </Unit0>
@@ -24,178 +21,142 @@
         <Filename Value="bearlibmap.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="BearLibMap"/>
-        <EditorIndex Value="3"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
+        <EditorIndex Value="-1"/>
         <CursorPos X="53" Y="22"/>
         <UsageCount Value="32"/>
-        <Loaded Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="bearlibmg.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="bearlibMG"/>
-        <EditorIndex Value="1"/>
-        <WindowIndex Value="0"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="86"/>
         <CursorPos X="43" Y="90"/>
         <UsageCount Value="26"/>
-        <Loaded Value="True"/>
       </Unit2>
       <Unit3>
-        <Filename Value="BearLibTerminal.pas"/>
+        <Filename Value="bearlibterminal.pas"/>
         <UnitName Value="BeaRLibTerminal"/>
-        <EditorIndex Value="4"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="282"/>
-        <CursorPos X="1" Y="305"/>
+        <EditorIndex Value="-1"/>
         <UsageCount Value="16"/>
-        <Loaded Value="True"/>
       </Unit3>
       <Unit4>
         <Filename Value="bearlibfov.pas"/>
-        <UnitName Value="bearlibfov"/>
-        <EditorIndex Value="2"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
+        <EditorIndex Value="-1"/>
         <CursorPos X="12" Y="18"/>
         <UsageCount Value="16"/>
-        <Loaded Value="True"/>
       </Unit4>
       <Unit5>
         <Filename Value="C:\lazarus\fpc\2.6.4\source\rtl\inc\ctypes.pp"/>
-        <UnitName Value="ctypes"/>
-        <WindowIndex Value="0"/>
         <TopLine Value="33"/>
         <CursorPos X="3" Y="55"/>
         <UsageCount Value="10"/>
       </Unit5>
     </Units>
-    <General>
-      <ActiveWindowIndexAtStart Value="0"/>
-    </General>
-    <JumpHistory Count="30" HistoryIndex="29">
+    <JumpHistory Count="26" HistoryIndex="25">
       <Position1>
         <Filename Value="BearlibDemo.pas"/>
-        <Caret Line="240" Column="37" TopLine="234"/>
+        <Caret Line="241" Column="25" TopLine="234"/>
       </Position1>
       <Position2>
         <Filename Value="BearlibDemo.pas"/>
-        <Caret Line="241" Column="25" TopLine="234"/>
+        <Caret Line="59" Column="12" TopLine="41"/>
       </Position2>
       <Position3>
         <Filename Value="BearlibDemo.pas"/>
-        <Caret Line="59" Column="12" TopLine="41"/>
+        <Caret Line="62" Column="27" TopLine="47"/>
       </Position3>
       <Position4>
         <Filename Value="BearlibDemo.pas"/>
-        <Caret Line="62" Column="27" TopLine="47"/>
+        <Caret Line="321" Column="5" TopLine="315"/>
       </Position4>
       <Position5>
         <Filename Value="BearlibDemo.pas"/>
-        <Caret Line="321" Column="5" TopLine="315"/>
+        <Caret Line="261" TopLine="245"/>
       </Position5>
       <Position6>
         <Filename Value="BearlibDemo.pas"/>
-        <Caret Line="261" Column="1" TopLine="245"/>
+        <Caret Line="102" Column="65" TopLine="90"/>
       </Position6>
       <Position7>
         <Filename Value="BearlibDemo.pas"/>
-        <Caret Line="102" Column="65" TopLine="90"/>
       </Position7>
       <Position8>
         <Filename Value="BearlibDemo.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Caret Line="102" Column="65" TopLine="84"/>
       </Position8>
       <Position9>
         <Filename Value="BearlibDemo.pas"/>
-        <Caret Line="102" Column="65" TopLine="84"/>
+        <Caret Line="260" Column="35" TopLine="250"/>
       </Position9>
       <Position10>
         <Filename Value="BearlibDemo.pas"/>
-        <Caret Line="260" Column="35" TopLine="250"/>
+        <Caret Line="251" Column="30" TopLine="239"/>
       </Position10>
       <Position11>
         <Filename Value="BearlibDemo.pas"/>
-        <Caret Line="251" Column="30" TopLine="239"/>
+        <Caret Line="387" Column="5" TopLine="365"/>
       </Position11>
       <Position12>
         <Filename Value="BearlibDemo.pas"/>
-        <Caret Line="387" Column="5" TopLine="365"/>
+        <Caret Line="383" TopLine="365"/>
       </Position12>
       <Position13>
-        <Filename Value="bearlibmg.pas"/>
-        <Caret Line="15" Column="1" TopLine="3"/>
+        <Filename Value="BearlibDemo.pas"/>
+        <Caret Line="268" Column="10" TopLine="253"/>
       </Position13>
       <Position14>
-        <Filename Value="bearlibmg.pas"/>
-        <Caret Line="58" Column="29" TopLine="45"/>
+        <Filename Value="BearlibDemo.pas"/>
+        <Caret Line="375" Column="11" TopLine="368"/>
       </Position14>
       <Position15>
-        <Filename Value="bearlibmg.pas"/>
-        <Caret Line="78" Column="1" TopLine="57"/>
+        <Filename Value="BearlibDemo.pas"/>
+        <Caret Line="38" Column="13" TopLine="27"/>
       </Position15>
       <Position16>
         <Filename Value="BearlibDemo.pas"/>
-        <Caret Line="383" Column="1" TopLine="365"/>
+        <Caret Line="388" Column="29" TopLine="368"/>
       </Position16>
       <Position17>
         <Filename Value="BearlibDemo.pas"/>
-        <Caret Line="268" Column="10" TopLine="253"/>
+        <Caret Line="117" Column="28" TopLine="105"/>
       </Position17>
       <Position18>
         <Filename Value="BearlibDemo.pas"/>
-        <Caret Line="375" Column="11" TopLine="368"/>
+        <Caret Line="254" Column="12" TopLine="246"/>
       </Position18>
       <Position19>
         <Filename Value="BearlibDemo.pas"/>
-        <Caret Line="38" Column="13" TopLine="27"/>
+        <Caret Line="390" Column="23" TopLine="377"/>
       </Position19>
       <Position20>
         <Filename Value="BearlibDemo.pas"/>
-        <Caret Line="388" Column="29" TopLine="368"/>
+        <Caret Line="46" Column="12" TopLine="35"/>
       </Position20>
       <Position21>
         <Filename Value="BearlibDemo.pas"/>
-        <Caret Line="117" Column="28" TopLine="105"/>
+        <Caret Line="48" Column="24" TopLine="35"/>
       </Position21>
       <Position22>
         <Filename Value="BearlibDemo.pas"/>
-        <Caret Line="254" Column="12" TopLine="246"/>
+        <Caret Line="65" Column="10" TopLine="51"/>
       </Position22>
       <Position23>
         <Filename Value="BearlibDemo.pas"/>
-        <Caret Line="390" Column="23" TopLine="377"/>
+        <Caret Line="68" Column="12" TopLine="54"/>
       </Position23>
       <Position24>
         <Filename Value="BearlibDemo.pas"/>
-        <Caret Line="46" Column="12" TopLine="35"/>
+        <Caret Line="57" Column="15" TopLine="46"/>
       </Position24>
       <Position25>
         <Filename Value="BearlibDemo.pas"/>
-        <Caret Line="48" Column="24" TopLine="35"/>
+        <Caret Line="65" Column="44" TopLine="54"/>
       </Position25>
       <Position26>
-        <Filename Value="BearlibDemo.pas"/>
-        <Caret Line="65" Column="10" TopLine="51"/>
+        <Filename Value="bearlibdemo.pas"/>
+        <Caret Line="74" Column="20" TopLine="56"/>
       </Position26>
-      <Position27>
-        <Filename Value="BearlibDemo.pas"/>
-        <Caret Line="68" Column="12" TopLine="54"/>
-      </Position27>
-      <Position28>
-        <Filename Value="BearlibDemo.pas"/>
-        <Caret Line="57" Column="15" TopLine="46"/>
-      </Position28>
-      <Position29>
-        <Filename Value="BearlibDemo.pas"/>
-        <Caret Line="65" Column="44" TopLine="54"/>
-      </Position29>
-      <Position30>
-        <Filename Value="BearlibDemo.pas"/>
-        <Caret Line="51" Column="7" TopLine="70"/>
-      </Position30>
     </JumpHistory>
   </ProjectSession>
-  <EditorMacros Count="0"/>
 </CONFIG>
