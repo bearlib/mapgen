@@ -1,6 +1,8 @@
 unit BearLibMap;
 
-{$mode objfpc}{$H+}
+{$IFDEF FPC}
+{$MODE OBJFPC}{$H+}
+{$ENDIF}
 
 interface
 
@@ -24,4 +26,3 @@ function map_height(map_id: integer): Integer; cdecl; external BearLibMapLib;
 implementation
 
 end.
-

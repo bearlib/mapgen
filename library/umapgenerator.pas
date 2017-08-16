@@ -5,6 +5,9 @@
 }
 
 unit uMapGenerator;
+{$IFDEF FPC}
+  {$MODE Delphi}
+{$ENDIF}
 
 interface
 
@@ -928,7 +931,7 @@ begin
       Map[I+1,J+1] := Dungeon.Cells[I,J];
   if Assigned(Rooms) then
     Dungeon.DumpRooms(Rooms);
-  Dungeon.Free;    
+  Dungeon.Free;
 end;
 
 

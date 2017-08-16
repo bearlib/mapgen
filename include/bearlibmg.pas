@@ -1,6 +1,8 @@
 unit bearlibMG;
 
-{$mode objfpc}{$H+}
+{$IFDEF FPC}
+{$MODE OBJFPC}{$H+}
+{$ENDIF}
 
 interface
 
@@ -113,4 +115,3 @@ type
 implementation
 
 end.
-

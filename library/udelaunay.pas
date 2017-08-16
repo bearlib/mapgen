@@ -17,13 +17,13 @@
 //You can use this code however you like providing the above credits remain in tact
 
 unit uDelaunay;
+{$IFDEF FPC}
+  {$MODE Delphi}
+{$ENDIF}
 
 interface
 
 uses SysUtils,
-{$IFNDEF BEARLIB}
-  Dialogs, Graphics, Forms,
-{$ENDIF}
   Types, Math;
 
 type DelaunayFloat = Single;
@@ -279,12 +279,7 @@ begin
 
 
   If (Abs(y1 - y2) < eps) And (Abs(y2 - y3) < eps) Then
-  begin
-{$IFNDEF BEARLIB}
-  ShowMessage('INCIRCUM - F - Points are coincident !!');
-{$ENDIF}
-  Exit;
-  end;
+    Exit;
 
   If Abs(y2 - y1) < eps Then
   begin
@@ -574,7 +569,7 @@ begin
            ntri := ntri - 1;
         End;
       until i>=ntri; }
- 
+
       Triangulate := ntri;
     finally
       for i := 0 to 2 do FreeAndNIL(Edges[i]);
