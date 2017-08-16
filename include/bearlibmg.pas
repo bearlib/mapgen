@@ -8,7 +8,15 @@ uses
   Classes, SysUtils;
 
 const
+{$ifdef win32}
   bearlibmgLIB = 'bearlibmg.dll';
+{$else}
+  {$ifdef darwin}
+    bearlibmgLIB = 'bearlibmg.dylib';
+  {$else}
+    bearlibmgLIB = 'bearlibmg.so';
+  {$endif}
+{$endif}
 
 type
     TMapGenerator = (
