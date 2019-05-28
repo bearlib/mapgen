@@ -60,7 +60,7 @@ type
     function Intersects(const WithRoom: TRoom): Boolean;
     function CloseByX(const WithRoom: TRoom): Boolean;
     function CloseByY(const WithRoom: TRoom): Boolean;
-    procedure Draw(Context: TDungeon; Index: integer=-1);
+    procedure Draw(Context: TDungeon; Index: integer);
   end;
   PRoom = ^TRoom;
 
@@ -101,6 +101,7 @@ type
     procedure DrawHallways;
 
     procedure DumpRooms(ToRooms: TRoomsData);
+    procedure DebugDraw;
   end;
 
 
@@ -122,6 +123,19 @@ begin
   SetLength(Rooms, NRooms);
   SetLength(Cells, MapX,MapY);
   SetLength(RoomCache, MapX,MapY);
+end;
+
+procedure TDungeon.DebugDraw;
+var
+  y, x: integer;
+begin
+  for y := 0 to MapY-1 do
+  begin
+    for x := 0 to MapX-1 do
+      write(Chr(ord(Cells[x, y]) - Ord(TILE_EMPTY) + ord('0')));
+    writeln;
+  end;
+
 end;
 
 procedure TDungeon.DelaunayTriangulation;
@@ -196,7 +210,8 @@ var
     begin
       if not Central then exit;
       FoundRoom := RoomCache[x,y]-1;
-      if Rooms[RoomCache[x,y]-1].TraverseId = CurPass then
+      if(FoundRoom < 0) then exit;
+      if Rooms[FoundRoom].TraverseId = CurPass then
       begin
         //only one door in starting andd ending room
         {if FoundRoom = FromRoom then exit;
@@ -211,7 +226,7 @@ var
         exit;
       end;
       Cells[x,y] := TILE_Door;
-      Rooms[RoomCache[x,y]-1].TraverseId := CurPass;
+      Rooms[FoundRoom].TraverseId := CurPass;
       if (FoundRoom <> FromRoom) and (FoundRoom <> ToRoom) then
       begin
         prevroom := FoundRoom;
@@ -231,7 +246,7 @@ var
     if (N > 0) and (Rooms[N-1].RoomType <> TILE_BigRoom) then
     begin
       Rooms[N-1].RoomType := TILE_SmallRoom;
-      Rooms[N-1].Draw(Self);
+      Rooms[N-1].Draw(Self, -1);
       exit;
     end;
     Cells[x,y] := TILE_Corridor;
@@ -287,7 +302,7 @@ begin
     if Rooms[I].RoomType = TILE_SmallRoom then
       Rooms[I].RoomType := TILE_CAVE_Wall
     else
-      Rooms[I].Draw(Self);
+      Rooms[I].Draw(Self, -1);
   CurPass := 0;
   for I := 0 to Length(MainRooms) - 1 do
   begin
@@ -622,8 +637,10 @@ begin
         RoomType := TILE_BigRoom;
         Inc(NMain);
       end;
-      Draw(Self, I);
+//      Draw(Self, I);
     end;
+  for I := NRooms - 1 downto 0 do
+    Rooms[I].Draw(Self, I);
   SetLength(MainRooms, NMain);
   NMain := 0;
   for I := 0 to NRooms - 1 do
@@ -665,7 +682,7 @@ begin
   Result := Y+H div 2;
 end;
 
-procedure TRoom.Draw(Context: TDungeon; Index: integer=-1);
+procedure TRoom.Draw(Context: TDungeon; Index: integer);
 var
   ax, ay: Integer;
 begin
