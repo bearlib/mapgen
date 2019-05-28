@@ -1,6 +1,6 @@
 {*
 * BearLibTerminal
-* Copyright (C) 2013-2014 Cfyz
+* Copyright (C) 2013-2017 Cfyz, Apromix
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -18,17 +18,16 @@
 * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
 * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*
-* Release date: 2014-11-10
 *}
 
 {$H+}
 
-unit BeaRLibTerminal;
+unit BearLibTerminal;
 
-interface  
+interface
 
-uses ctypes;
+uses
+  Types;
 
 const
   // Keyboard scancodes
@@ -126,6 +125,7 @@ const
   TK_KP_PERIOD       = $63;
   TK_SHIFT           = $70;
   TK_CONTROL         = $71;
+  TK_ALT             = $72;
 
   // Mouse events/states
   TK_MOUSE_LEFT       = $80; // Buttons
@@ -172,14 +172,30 @@ const
   // Input result codes for terminal_read function.
   TK_INPUT_NONE       =   0;
   TK_INPUT_CANCELLED  =  -1;
-
-type
-  TColor = CUInt32;
-  PColor = ^TColor;
+  
+  // Text alignment.
+  TK_ALIGN_DEFAULT    =   0;
+  TK_ALIGN_LEFT       =   1;
+  TK_ALIGN_RIGHT      =   2;
+  TK_ALIGN_CENTER     =   3;
+  TK_ALIGN_TOP        =   4;
+  TK_ALIGN_BOTTOM     =   8;
+  TK_ALIGN_MIDDLE     =  12;
 
 // ----------------------------------------------------------------------------
 // Module interface
 // ----------------------------------------------------------------------------
+
+{$IFNDEF FPC}
+type
+  Int32 = Integer;
+  PInt32 = ^Integer;
+  UInt32 = Cardinal;
+  PUInt32 = ^Cardinal;
+{$ENDIF}
+
+type
+  TSize = Types.TSize;
 
 // Open
 function terminal_open(): LongBool;
@@ -190,9 +206,9 @@ procedure terminal_close();
   cdecl; external 'BearLibTerminal' name 'terminal_close';
 
 // Set
-function terminal_set(const Options: String): LongBool;
+function terminal_set(const Options: AnsiString): LongBool; overload;
 
-function terminal_set(const Options: UnicodeString): LongBool;
+function terminal_set(const Options: WideString): LongBool; overload;
 
 // Refresh
 procedure terminal_refresh();
@@ -203,109 +219,141 @@ procedure terminal_clear();
   cdecl; external 'BearLibTerminal' name 'terminal_clear';
 
 // ClearArea
-procedure terminal_clear_area(Left, Top, Width, Height: Integer);
+procedure terminal_clear_area(Left, Top, Width, Height: Int32);
   cdecl; external 'BearLibTerminal' name 'terminal_clear_area';
 
 // Crop
-procedure terminal_crop(Left, Top, Width, Height: Integer);
+procedure terminal_crop(Left, Top, Width, Height: Int32);
   cdecl; external 'BearLibTerminal' name 'terminal_crop';
 
 // Color
-procedure terminal_color(Color: TColor);
+procedure terminal_color(Color: UInt32); overload;
   cdecl; external 'BearLibTerminal' name 'terminal_color';
   
-procedure terminal_color(Color: String);
+procedure terminal_color(Color: AnsiString); overload;
 
-procedure terminal_color(Color: UnicodeString);
+procedure terminal_color(Color: WideString); overload;
 
 // BkColor
-procedure terminal_bkcolor(Color: TColor);
+procedure terminal_bkcolor(Color: UInt32); overload;
   cdecl; external 'BearLibTerminal' name 'terminal_bkcolor';
 
-procedure terminal_bkcolor(Color: String);
+procedure terminal_bkcolor(Color: AnsiString); overload;
 
-procedure terminal_bkcolor(Color: UnicodeString);
+procedure terminal_bkcolor(Color: WideString); overload;
 
 // Composition
-procedure terminal_composition(Mode: Integer);
+procedure terminal_composition(Mode: Int32);
   cdecl; external 'BearLibTerminal' name 'terminal_composition';
 
 // Layer
-procedure terminal_layer(Mode: Integer);
+procedure terminal_layer(Mode: Int32);
   cdecl; external 'BearLibTerminal' name 'terminal_layer';
 
-// Put
-procedure terminal_put(X, Y: Integer; Code: Integer);
-  cdecl; external 'BearLibTerminal' name 'terminal_put';
+// Font
+procedure terminal_font(const Name: AnsiString); overload;
 
-procedure terminal_put(X, Y: Integer; Code: UnicodeChar);
+procedure terminal_font(const Name: WideString); overload;
+
+// Put
+procedure terminal_put(X, Y, Code: Int32); overload;
+
+procedure terminal_put(X, Y: Int32; Code: AnsiChar); overload;
+
+procedure terminal_put(X, Y: Int32; Code: WideChar); overload;
 
 // PutExt
-procedure terminal_put_ext(X, Y, dX, dY: Integer; Code: Integer; Corners: PColor);
+procedure terminal_put_ext(X, Y, dX, dY: Int32; Code: Int32; Corners: PUInt32); overload;
   cdecl; external 'BearLibTerminal' name 'terminal_put_ext';
 
-procedure terminal_put_ext(X, Y, dX, dY: Integer; Code: UnicodeChar; Corners: PColor);
+procedure terminal_put_ext(X, Y, dX, dY: Int32; Code: WideChar; Corners: PUInt32); overload;
 
-procedure terminal_put_ext(X, Y, dX, dY: Integer; Code: Integer);
+procedure terminal_put_ext(X, Y, dX, dY: Int32; Code: Int32); overload;
 
-procedure terminal_put_ext(X, Y, dX, dY: Integer; Code: UnicodeChar);
+procedure terminal_put_ext(X, Y, dX, dY: Int32; Code: WideChar); overload;
 
 // Pick
-function terminal_pick(X, Y, Index: Integer): Integer;
+function terminal_pick(X, Y, Index: Int32): Int32; overload;
   cdecl; external 'BearLibTerminal' name 'terminal_pick';
 
-function terminal_pick(X, Y: Integer): Integer;
+function terminal_pick(X, Y: Int32): Int32; overload;
 
 // PickColor
-function terminal_pick_color(X, Y, Index: Integer): TColor;
+function terminal_pick_color(X, Y, Index: Int32): UInt32; overload;
   cdecl; external 'BearLibTerminal' name 'terminal_pick_color';
 
-function terminal_pick_color(X, Y: Integer): TColor;
+function terminal_pick_color(X, Y: Int32): UInt32; overload;
 
 // PickBkColor
-function terminal_pick_bkcolor(X, Y: Integer): TColor;
+function terminal_pick_bkcolor(X, Y: Int32): UInt32;
   cdecl; external 'BearLibTerminal' name 'terminal_pick_bkcolor';
 
 // Print
-function terminal_print(X, Y: Integer; const S: String): Cardinal;
+function terminal_print(X, Y: Int32; const S: AnsiString): TSize; overload;
 
-function terminal_print(X, Y: Integer; const S: UnicodeString): Cardinal;
+function terminal_print(X, Y: Int32; const S: WideString): TSize; overload;
+
+function terminal_print(X, Y, Alignment: Int32; const S: AnsiString): TSize; overload;
+
+function terminal_print(X, Y, Alignment: Int32; const S: WideString): TSize; overload;
+
+function terminal_print(X, Y, W, H, Alignment: Int32; const S: AnsiString): TSize; overload;
+
+function terminal_print(X, Y, W, H, Alignment: Int32; const S: WideString): TSize; overload;
 
 // Measure
-function terminal_measure(const S: String): Cardinal;
+function terminal_measure(const S: AnsiString): TSize; overload;
 
-function terminal_measure(const S: UnicodeString): Cardinal;
+function terminal_measure(const S: WideString): TSize; overload;
+
+function terminal_measure(W, H: Int32; const S: AnsiString): TSize; overload;
+
+function terminal_measure(W, H: Int32; const S: WideString): TSize; overload;
 
 // HasInput
 function terminal_has_input(): LongBool;
   cdecl; external 'BearLibTerminal' name 'terminal_has_input';
 
 // State
-function terminal_state(Code: Integer): Integer;
+function terminal_state(Code: Int32): Int32;
   cdecl; external 'BearLibTerminal' name 'terminal_state';
 
 // Check
-function terminal_check(Code: Integer): Boolean;
+function terminal_check(Code: Int32): Boolean;
 
 // Read
-function terminal_read(): Integer;
+function terminal_read(): Int32;
   cdecl; external 'BearLibTerminal' name 'terminal_read';
+
+// ReadStr
+function terminal_read_str(X, Y: Int32; var S: AnsiString; MaxLength: Int32): Int32; overload;
+
+function terminal_read_str(X, Y: Int32; var S: WideString; MaxLength: Int32): Int32; overload;
   
 // Peek
-function terminal_peek(): Integer;
+function terminal_peek(): Int32;
   cdecl; external 'BearLibTerminal' name 'terminal_peek';
 
 // Delay
-procedure terminal_delay(Period: Integer);
+procedure terminal_delay(Period: Int32);
   cdecl; external 'BearLibTerminal' name 'terminal_delay';
 
-// ColorFromName
-function color_from_name(const Name: String): TColor;
+// Get
+function terminal_get(const S: AnsiString): AnsiString; overload;
 
-function color_from_name(const Name: UnicodeString): TColor;
+function terminal_get(const S, Default: AnsiString): AnsiString; overload;
+
+function terminal_get(const S: WideString): WideString; overload;
+
+function terminal_get(const S, Default: WideString): WideString; overload;
+
+// ColorFromName
+function color_from_name(const Name: AnsiString): UInt32; overload;
+
+function color_from_name(const Name: WideString): UInt32; overload;
 
 // ColorFromARGB
-function color_from_argb(a, r, g, b: Integer): TColor;
+function color_from_argb(a, r, g, b: Int32): UInt32;
 
 // ----------------------------------------------------------------------------
 // Module implementation
@@ -313,126 +361,257 @@ function color_from_argb(a, r, g, b: Integer): TColor;
 
 implementation
 
-function terminal_set_ansi(const Options: PChar): LongBool;
+function terminal_set_ansi(const Options: PAnsiChar): LongBool;
   cdecl; external 'BearLibTerminal' name 'terminal_set8';
 
-function terminal_set(const Options: String): LongBool;
+function terminal_set(const Options: AnsiString): LongBool;
 begin
-    terminal_set := terminal_set_ansi(PChar(Options));
+    terminal_set := terminal_set_ansi(PAnsiChar(Options));
 end;
 
-function terminal_set_unicode(const Options: PUnicodeChar): LongBool;
+function terminal_set_unicode(const Options: PWideChar): LongBool;
   cdecl; external 'BearLibTerminal' name 'terminal_set16';
 
-function terminal_set(const Options: UnicodeString): LongBool;
+function terminal_set(const Options: WideString): LongBool;
 begin
-    terminal_set := terminal_set_unicode(PUnicodeChar(Options));
+    terminal_set := terminal_set_unicode(PWideChar(Options));
 end;
 
-procedure terminal_color(Color: String);
+procedure terminal_color(Color: AnsiString); overload;
 begin
-	terminal_color(color_from_name(Color));
+    terminal_color(color_from_name(Color));
 end;
 
-procedure terminal_color(Color: UnicodeString);
+procedure terminal_color(Color: WideString); overload;
 begin
-	terminal_color(color_from_name(Color));
+    terminal_color(color_from_name(Color));
 end;
 
-procedure terminal_bkcolor(Color: String);
+procedure terminal_bkcolor(Color: AnsiString); overload;
 begin
-	terminal_bkcolor(color_from_name(Color));
+    terminal_bkcolor(color_from_name(Color));
 end;
 
-procedure terminal_bkcolor(Color: UnicodeString);
+procedure terminal_bkcolor(Color: WideString); overload;
 begin
-	terminal_bkcolor(color_from_name(Color));
+    terminal_bkcolor(color_from_name(Color));
 end;
 
-procedure terminal_put(X, Y: Integer; Code: UnicodeChar);
+procedure terminal_font_ansi(const Name: PAnsiChar);
+  cdecl; external 'BearLibTerminal' name 'terminal_font8';
+
+procedure terminal_font_unicode(const Name: PWideChar);
+  cdecl; external 'BearLibTerminal' name 'terminal_font16';
+
+procedure terminal_font(const Name: AnsiString); overload;
 begin
-    terminal_put(X, Y, ord(Code));
+	terminal_font_ansi(PAnsiChar(Name));
 end;
 
-procedure terminal_put_ext(X, Y, dX, dY: Integer; Code: UnicodeChar; Corners: PColor);
+procedure terminal_font(const Name: WideString); overload;
 begin
-	terminal_put_ext(X, Y, dX, dY, ord(Code), Corners);
+	terminal_font_unicode(PWideChar(Name));
 end;
 
-procedure terminal_put_ext(X, Y, dX, dY: Integer; Code: Integer);
+procedure terminal_put_integer(X, Y: Int32; Code: Int32);
+  cdecl; external 'BearLibTerminal' name 'terminal_put';
+
+procedure terminal_put(X, Y, Code: Int32);
 begin
-	terminal_put_ext(X, Y, dX, dY, Code, PColor(0));
+    terminal_put_integer(X, Y, Code);
 end;
 
-procedure terminal_put_ext(X, Y, dX, dY: Integer; Code: UnicodeChar);
+procedure terminal_put(X, Y: Int32; Code: AnsiChar);
 begin
-	terminal_put_ext(X, Y, dX, dY, ord(Code), PColor(0));
+    terminal_put_integer(X, Y, ord(Code));
 end;
 
-function terminal_pick(X, Y: Integer): Integer;
+procedure terminal_put(X, Y: Int32; Code: WideChar);
 begin
-	terminal_pick := terminal_pick(X, Y, 0);
+    terminal_put_integer(X, Y, ord(Code));
 end;
 
-function terminal_pick_color(X, Y: Integer): TColor;
+procedure terminal_put_ext(X, Y, dX, dY: Int32; Code: WideChar; Corners: PUInt32); overload;
+begin
+    terminal_put_ext(X, Y, dX, dY, ord(Code), Corners);
+end;
+
+procedure terminal_put_ext(X, Y, dX, dY, Code: Int32); overload;
+begin
+    terminal_put_ext(X, Y, dX, dY, Code, PUInt32(0));
+end;
+
+procedure terminal_put_ext(X, Y, dX, dY: Int32; Code: WideChar); overload;
+begin
+    terminal_put_ext(X, Y, dX, dY, ord(Code), PUInt32(0));
+end;
+
+function terminal_pick(X, Y: Int32): Int32; overload;
+begin
+    terminal_pick := terminal_pick(X, Y, 0);
+end;
+
+function terminal_pick_color(X, Y: Int32): UInt32; overload;
 begin;
-	terminal_pick_color := terminal_pick_color(X, Y, 0);
+    terminal_pick_color := terminal_pick_color(X, Y, 0);
 end;
 
-function terminal_print_ansi(X, Y: Integer; const S: PChar): Cardinal;
-  cdecl; external 'BearLibTerminal' name 'terminal_print8';
+procedure terminal_print_ansi(X, Y, W, H, Alignment: Int32; const S: PAnsiChar; OutW, OutH: PInt32);
+  cdecl; external 'BearLibTerminal' name 'terminal_print_ext8';
+  
+procedure terminal_print_unicode(X, Y, W, H, Alignment: Int32; const S: PWideChar; OutW, OutH: PInt32);
+  cdecl; external 'BearLibTerminal' name 'terminal_print_ext16';
 
-function terminal_print(X, Y: Integer; const S: String): Cardinal;
+function terminal_print(X, Y: Int32; const S: AnsiString): TSize;
 begin
-    terminal_print := terminal_print_ansi(X, Y, PChar(S));
+    terminal_print := terminal_print(X, Y, 0, 0, TK_ALIGN_DEFAULT, S);
 end;
 
-function terminal_print_unicode(X, Y: Integer; const S: PUnicodeChar): Cardinal;
-  cdecl; external 'BearLibTerminal' name 'terminal_print16';
-
-function terminal_print(X, Y: Integer; const S: UnicodeString): Cardinal;
+function terminal_print(X, Y: Int32; const S: WideString): TSize;
 begin
-	terminal_print := terminal_print_unicode(X, Y, PUnicodeChar(S));
+    terminal_print := terminal_print(X, Y, 0, 0, TK_ALIGN_DEFAULT, S);
 end;
 
-function terminal_measure_ansi(const S: PChar): Cardinal;
-  cdecl; external 'BearLibTerminal' name 'terminal_measure8';
-
-function terminal_measure(const S: String): Cardinal;
+function terminal_print(X, Y, Alignment: Int32; const S: AnsiString): TSize;
 begin
-    terminal_measure := terminal_measure_ansi(PChar(S));
+    terminal_print := terminal_print(X, Y, 0, 0, Alignment, S);
 end;
 
-function terminal_measure_unicode(const S: PUnicodeChar): Cardinal;
-  cdecl; external 'BearLibTerminal' name 'terminal_measure16';
-
-function terminal_measure(const S: UnicodeString): Cardinal;
+function terminal_print(X, Y, Alignment: Int32; const S: WideString): TSize;
 begin
-	terminal_measure := terminal_measure_unicode(PUnicodeChar(S));
+    terminal_print := terminal_print(X, Y, 0, 0, Alignment, S);
 end;
 
-function terminal_check(Code: Integer): Boolean;
+function terminal_print(X, Y, W, H, Alignment: Int32; const S: AnsiString): TSize;
+var
+    OutW, OutH: Int32;
 begin
-	terminal_check := terminal_state(Code) > 0;
+    terminal_print_ansi(X, Y, W, H, Alignment, PAnsiChar(S), @OutW, @OutH);
+    terminal_print.cx := OutW;
+    terminal_print.cy := OutH;
 end;
 
-function color_from_name_ansi(const Name: PChar): TColor;
+function terminal_print(X, Y, W, H, Alignment: Int32; const S: WideString): TSize;
+var
+    OutW, OutH: Int32;
+begin
+    terminal_print_unicode(X, Y, W, H, Alignment, PWideChar(S), @OutW, @OutH);
+    terminal_print.cx := OutW;
+    terminal_print.cy := OutH;
+end;
+
+procedure terminal_measure_ansi(W, H: Int32; const S: PAnsiChar; OutW, OutH: PInt32);
+  cdecl; external 'BearLibTerminal' name 'terminal_measure_ext8';
+
+procedure terminal_measure_unicode(W, H: Int32; const S: PWideChar; OutW, OutH: PInt32);
+  cdecl; external 'BearLibTerminal' name 'terminal_measure_ext16';
+
+function terminal_measure(const S: AnsiString): TSize;
+begin
+    terminal_measure := terminal_measure(0, 0, S);
+end;
+
+function terminal_measure(const S: WideString): TSize;
+begin
+    terminal_measure := terminal_measure(0, 0, S);
+end;
+
+function terminal_measure(W, H: Int32; const S: AnsiString): TSize;
+var
+    OutW, OutH: Int32;
+begin
+    terminal_measure_ansi(W, H, PAnsiChar(S), @OutW, @OutH);
+    terminal_measure.cx := OutW;
+    terminal_measure.cy := OutH;
+end;
+
+function terminal_measure(W, H: Int32; const S: WideString): TSize;
+var
+    OutW, OutH: Int32;
+begin
+    terminal_measure_unicode(W, H, PWideChar(S), @OutW, @OutH);
+    terminal_measure.cx := OutW;
+    terminal_measure.cy := OutH;
+end;
+
+function terminal_check(Code: Int32): Boolean;
+begin
+    terminal_check := terminal_state(Code) > 0;
+end;
+
+function terminal_read_str_ansi(X, Y: Int32; S: PAnsiChar; MaxLength: Int32): Int32;
+  cdecl; external 'BearLibTerminal' name 'terminal_read_str8';
+
+function terminal_read_str(X, Y: Int32; var S: AnsiString; MaxLength: Int32): Int32;
+var
+    i: Integer;
+begin
+    SetLength(S, MaxLength*3+1); // Bigger size to accomodate possible UTF-8 string.
+    terminal_read_str := terminal_read_str_ansi(X, Y, PAnsiChar(S), MaxLength);
+    for i := 1 to MaxLength*3+1 do
+        if S[i] = AnsiChar(0) then
+            break;
+    SetLength(S, i);
+end;
+
+function terminal_read_str_unicode(X, Y: Int32; S: PWideChar; MaxLength: Int32): Int32;
+  cdecl; external 'BearLibTerminal' name 'terminal_read_str16';
+
+function terminal_read_str(X, Y: Int32; var S: WideString; MaxLength: Int32): Int32;
+var
+    i: Integer;
+begin
+    SetLength(S, MaxLength);
+    terminal_read_str := terminal_read_str_unicode(X, Y, PWideChar(S), MaxLength);
+    for i := 1 to MaxLength do
+        if S[i] = WideChar(0) then
+            break;
+    SetLength(S, i);
+end;
+
+function terminal_get_ansi(const S, Default: PAnsiChar): PAnsiChar;
+  cdecl; external 'BearLibTerminal' name 'terminal_get8';
+
+function terminal_get_unicode(const S, Default: PWideChar): PWideChar;
+  cdecl; external 'BearLibTerminal' name 'terminal_get16';
+
+function terminal_get(const S: AnsiString): AnsiString;
+begin
+    terminal_get := terminal_get_ansi(PAnsiChar(S), nil);
+end;
+
+function terminal_get(const S, Default: AnsiString): AnsiString;
+begin
+    terminal_get := terminal_get_ansi(PAnsiChar(S), PAnsiChar(Default));
+end;
+
+function terminal_get(const S: WideString): WideString;
+begin
+    terminal_get := terminal_get_unicode(PWideChar(S), nil);
+end;
+
+function terminal_get(const S, Default: WideString): WideString;
+begin
+    terminal_get := terminal_get_unicode(PWideChar(S), PWideChar(Default));
+end;
+
+function color_from_name_ansi(const Name: PAnsiChar): UInt32;
   cdecl; external 'BearLibTerminal' name 'color_from_name8';
 
-function color_from_name(const Name: String): TColor;
+function color_from_name(const Name: AnsiString): UInt32;
 begin
-    color_from_name := color_from_name_ansi(PChar(Name));
+    color_from_name := color_from_name_ansi(PAnsiChar(Name));
 end;
 
-function color_from_name_unicode(const Name: PUnicodeChar): TColor;
+function color_from_name_unicode(const Name: PWideChar): UInt32;
   cdecl; external 'BearLibTerminal' name 'color_from_name16';
 
-function color_from_name(const Name: UnicodeString): TColor;
+function color_from_name(const Name: WideString): UInt32;
 begin
-    color_from_name := color_from_name_unicode(PUnicodeChar(Name));
+    color_from_name := color_from_name_unicode(PWideChar(Name));
 end;
 
-function color_from_argb(a, r, g, b: Integer): TColor;
+function color_from_argb(a, r, g, b: Int32): UInt32;
 begin
     if a > 255 then a := 255;
     if r > 255 then r := 255;

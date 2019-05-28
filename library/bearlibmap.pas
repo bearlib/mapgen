@@ -1,18 +1,24 @@
 unit BearLibMap;
 
 {$ifdef fpc}{$mode delphi}{$endif}
-{$DEFINE BEARLIBMAP_DYNAMIC}
+{.$DEFINE BEARLIBMAP_DYNAMIC}
 
 interface
 
 const
-{$ifdef win32}
-  BearLibMapLib = 'bearlibmap.dll';
+
+{$ifdef MSWINDOWS}
+{$define WINDOWS}
+{$endif}
+
+
+{$ifdef WINDOWS}
+  BearLibMapLib = 'bearlibFOV.dll';
 {$else}
   {$ifdef darwin}
     BearLibMapLib = 'bearlibmap.dylib';
   {$else}
-    BearLibMapLib = 'bearlibmap.so';
+    BearLibMapLib = 'bearlibFOV.so';
   {$endif}
 {$endif}
 
@@ -55,7 +61,11 @@ var
   h: TLibHandle;
 begin
   h := LoadLibrary(BearLibMapLib);
-  if h = NilHandle then exit;
+  if h = NilHandle then
+  begin
+//    writeln(BearLibMapLib + 'NOT FOUND!');
+    exit;
+  end;
   map_alloc := GetProcedureAddress(h, 'map_alloc');
   map_free := GetProcedureAddress(h, 'map_free');
   map_copy := GetProcedureAddress(h, 'map_copy');

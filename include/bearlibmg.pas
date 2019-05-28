@@ -10,13 +10,13 @@ uses
   Classes, SysUtils;
 
 const
-{$ifdef win32}
+{$ifdef windows}
   bearlibmgLIB = 'bearlibmg.dll';
 {$else}
   {$ifdef darwin}
     bearlibmgLIB = 'bearlibmg.dylib';
   {$else}
-    bearlibmgLIB = 'bearlibmg.so';
+    bearlibmgLIB = 'bearlibmg.dll';
   {$endif}
 {$endif}
 

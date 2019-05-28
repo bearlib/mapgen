@@ -16,6 +16,8 @@ const
   kTileLayer = 3;
 
 type
+  TColor = UInt32;
+
   TLight = record
     X, Y, Radius: integer;
     Enabled: boolean;
@@ -365,11 +367,11 @@ begin
   end;}
 
 
-  terminal_set(Format('window: size=%dx%d', [80, 41]));
-  terminal_set('title=Lighting');
-  terminal_set('font.name=media/UbuntuMono-R.ttf; font.size=12');
+//  terminal_set(Format('window: size=%dx%d', [80, 41]));
+//  terminal_set('title=Lighting');
+//  terminal_set('font.name=media/UbuntuMono-R.ttf; font.size=12');
   //0xE000: tileset.png, size=16x16, spacing=2x1;
-  terminal_set('0xE000: media/supplement.png, size=8x16, spacing=0x0;');
+//  terminal_set('0xE000: media/supplement.png, size=8x16, spacing=0x0;');
 
   LoadMap;
   gen_type := G_NICE_DUNGEON;

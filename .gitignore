@@ -72,3 +72,5 @@ __recovery/
 *.lps
 link.res
 */backup/
+*.dbg
+
